@@ -22,6 +22,30 @@ from moneyprinter.schemas import (
 logger = logging.getLogger(__name__)
 
 
+def load_and_validate_json(json_path: Path) -> VideoDocument:
+    """
+    Charge et valide un fichier JSON pour la vidéo MoneyPrinter.
+
+    Args:
+        json_path: Chemin vers le fichier JSON.
+
+    Returns:
+        Document vidéo validé.
+
+    Raises:
+        OSError: Si le fichier ne peut pas être lu.
+        UnicodeDecodeError: Si le fichier n'est pas UTF-8 valide.
+        json.JSONDecodeError: Si le JSON est malformé.
+        ValidationError: Si le schéma ou le profil MVP est invalide.
+    """
+    json_path = Path(json_path)
+    source = json_path.read_text(encoding="utf-8")
+    payload = json.loads(source, parse_float=Decimal)
+    document = VideoDocument.model_validate(payload)
+    validate_mvp_profile(document)
+    return document
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="moneyprinter",
@@ -46,20 +70,10 @@ def _format_validation_error(error: ValidationError) -> str:
 
 def _validate_file(json_path: Path) -> int:
     try:
-        source = json_path.read_text(encoding="utf-8")
-    except OSError as error:
+        document = load_and_validate_json(json_path)
+    except (OSError, UnicodeDecodeError) as error:
         logger.error("Impossible de lire '%s': %s", json_path, error)
         return 1
-    except UnicodeDecodeError as error:
-        logger.error(
-            "Le fichier '%s' n'est pas un texte UTF-8 valide: %s",
-            json_path,
-            error,
-        )
-        return 1
-
-    try:
-        payload = json.loads(source, parse_float=Decimal)
     except json.JSONDecodeError as error:
         logger.error(
             "JSON malformé dans '%s' (ligne %s, colonne %s): %s",
@@ -69,9 +83,6 @@ def _validate_file(json_path: Path) -> int:
             error.msg,
         )
         return 1
-
-    try:
-        document = VideoDocument.model_validate(payload)
     except ValidationError as error:
         logger.error(
             "Schéma invalide dans '%s':\n%s",
@@ -79,9 +90,6 @@ def _validate_file(json_path: Path) -> int:
             _format_validation_error(error),
         )
         return 1
-
-    try:
-        validate_mvp_profile(document)
     except MVPProfileError as error:
         logger.error("Profil MVP invalide dans '%s': %s", json_path, error)
         return 1
