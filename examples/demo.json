@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "title": "Pourquoi une année dure environ 365 jours",
+  "video": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "background_color": "#101827",
+    "scenes": [
+      {
+        "duration_seconds": 5,
+        "headline": "Pourquoi 365 jours ?",
+        "body": "Notre calendrier suit le voyage annuel de la Terre autour du Soleil.",
+        "accent_color": "#FFC857"
+      },
+      {
+        "duration_seconds": 8,
+        "headline": "Un tour presque complet",
+        "body": "La Terre met environ 365 jours et près de 6 heures à retrouver la même position autour du Soleil.",
+        "accent_color": "#71D6C1"
+      },
+      {
+        "duration_seconds": 8,
+        "headline": "Les heures s'additionnent",
+        "body": "Ces heures supplémentaires forment environ une journée tous les quatre ans : c'est l'idée de l'année bissextile.",
+        "accent_color": "#FF8A65"
+      },
+      {
+        "duration_seconds": 9,
+        "headline": "Un calendrier ajusté",
+        "body": "Le 29 février aide à garder les saisons en phase avec le calendrier. Les règles des siècles affinent encore cet ajustement.",
+        "accent_color": "#A78BFA"
+      }
+    ]
+  }
+}
