@@ -1,6 +1,7 @@
 """Tests pour le module encoder."""
 
 import json
+import shutil
 import tempfile
 from decimal import Decimal
 from pathlib import Path
@@ -14,6 +15,11 @@ from moneyprinter.validator import FFprobeValidator, ValidatorError
 
 # Chemin vers le JSON de démonstration
 DEMO_PATH = Path(__file__).parents[1] / "examples" / "demo.json"
+
+# Détecter si FFmpeg et ffprobe sont disponibles
+FFMPEG_AVAILABLE = shutil.which("ffmpeg") is not None
+FFPROBE_AVAILABLE = shutil.which("ffprobe") is not None
+FFMPEG_AND_FFPROBE = FFMPEG_AVAILABLE and FFPROBE_AVAILABLE
 
 
 @pytest.fixture
@@ -175,8 +181,8 @@ def test_encoder_input_validation_directory_as_image(tmp_path) -> None:
 
 
 @pytest.mark.skipif(
-    True,
-    reason="Requires FFmpeg; use this for local testing only",
+    not FFMPEG_AND_FFPROBE,
+    reason="Requires FFmpeg and ffprobe",
 )
 def test_encoder_creates_mp4_file(tmp_path, demo_images_dir) -> None:
     """L'encodeur crée un fichier MP4 valide."""
@@ -200,8 +206,8 @@ def test_encoder_creates_mp4_file(tmp_path, demo_images_dir) -> None:
 
 
 @pytest.mark.skipif(
-    True,
-    reason="Requires FFmpeg; use this for local testing only",
+    not FFMPEG_AND_FFPROBE,
+    reason="Requires FFmpeg and ffprobe",
 )
 def test_encoder_respects_overwrite_flag(tmp_path, demo_images_dir) -> None:
     """L'encodeur rejette un fichier de sortie préexistant sans overwrite=True."""
@@ -229,8 +235,8 @@ def test_encoder_respects_overwrite_flag(tmp_path, demo_images_dir) -> None:
 
 
 @pytest.mark.skipif(
-    True,
-    reason="Requires FFmpeg; use this for local testing only",
+    not FFMPEG_AND_FFPROBE,
+    reason="Requires FFmpeg and ffprobe",
 )
 def test_encoder_overwrites_file_when_enabled(tmp_path, demo_images_dir) -> None:
     """L'encodeur remplace un fichier de sortie existant avec overwrite=True."""
@@ -261,8 +267,8 @@ def test_encoder_overwrites_file_when_enabled(tmp_path, demo_images_dir) -> None
 
 
 @pytest.mark.skipif(
-    True,
-    reason="Requires FFmpeg; use this for local testing only",
+    not FFMPEG_AND_FFPROBE,
+    reason="Requires FFmpeg and ffprobe",
 )
 def test_encoder_creates_parent_directories(tmp_path, demo_images_dir) -> None:
     """L'encodeur crée les répertoires parents du fichier de sortie."""
@@ -286,8 +292,8 @@ def test_encoder_creates_parent_directories(tmp_path, demo_images_dir) -> None:
 
 
 @pytest.mark.skipif(
-    True,
-    reason="Requires FFmpeg; use this for local testing only",
+    not FFMPEG_AND_FFPROBE,
+    reason="Requires FFmpeg and ffprobe",
 )
 def test_encoder_validates_frame_count(tmp_path, demo_images_dir) -> None:
     """L'encodeur produit le nombre exact de frames attendues."""
@@ -320,8 +326,8 @@ def test_encoder_validates_frame_count(tmp_path, demo_images_dir) -> None:
 
 
 @pytest.mark.skipif(
-    True,
-    reason="Requires FFmpeg; use this for local testing only",
+    not FFMPEG_AND_FFPROBE,
+    reason="Requires FFmpeg and ffprobe",
 )
 def test_encoder_concatenates_scenes_in_order(tmp_path, demo_images_dir) -> None:
     """L'encodeur concatène les scènes dans le bon ordre."""
@@ -412,8 +418,8 @@ def test_ffprobe_validator_rejects_nonexistent_file(tmp_path) -> None:
 
 
 @pytest.mark.skipif(
-    True,
-    reason="Full 1080x1920 @ 30s acceptance test; run manually only",
+    not FFMPEG_AND_FFPROBE,
+    reason="Requires FFmpeg and ffprobe",
 )
 def test_full_demo_encoding(tmp_path, demo_document, demo_timeline) -> None:
     """Test d'acceptation complet : encode demo.json en 1080×1920 @ 30s."""
